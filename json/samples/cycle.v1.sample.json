@@ -1,0 +1,16 @@
+{
+  "msg_ver": "1.0.0",
+  "ts": "2025-10-27T22:10:02.612Z",
+  "machine_id": "cnc01",
+  "event": "cycle",
+  "order_id": "O-2411-001",
+  "lot_id": "L-001",
+  "result": "GOOD",
+  "good": 1,
+  "scrap": 0,
+  "scrap_reason_code": null,
+  "ct_ideal_ms": 1200,
+  "ct_actual_ms": 1320,
+  "seq": 1285,
+  "source": "opcua"
+}

@@ -1,0 +1,19 @@
+# Autor: Dixon Cuesta
+# Python 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+.venv/
+venv/
+env/
+# Node-RED runtime (if exported)
+node_modules/
+# OS
+.DS_Store
+Thumbs.db
+# Secrets
+.env
+# VS Code local history
+.history/

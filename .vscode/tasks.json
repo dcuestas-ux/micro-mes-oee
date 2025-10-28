@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "docker: up",   "type": "shell", "command": "docker compose up -d" },
+    { "label": "docker: down", "type": "shell", "command": "docker compose down" },
+    { "label": "mqtt: sub cnc01", "type": "shell", "command": "docker exec -it mosquitto mosquitto_sub -t 'site/bog/line/l1/machine/cnc01/v1/#' -v" },
+    { "label": "mqtt: pub sample state", "type": "shell", "command": "docker exec -it mosquitto mosquitto_pub -t site/bog/line/l1/machine/cnc01/v1/state -q 1 -r -m '{\"msg_ver\":\"1.0.0\",\"ts\":\"2025-10-27T22:10:01.234Z\",\"machine_id\":\"cnc01\",\"event\":\"state\",\"seq\":1,\"source\":\"sim\",\"state\":\"RUN\",\"reason_code\":null,\"order_id\":\"O-2411-001\",\"lot_id\":\"L-001\"}'" }
+  ]
+}

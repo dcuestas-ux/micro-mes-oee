@@ -1,0 +1,12 @@
+{
+  "msg_ver": "1.0.0",
+  "ts": "2025-10-27T22:10:01.234Z",
+  "machine_id": "cnc01",
+  "event": "state",
+  "state": "RUN",
+  "reason_code": null,
+  "order_id": "O-2411-001",
+  "lot_id": "L-001",
+  "seq": 1284,
+  "source": "opcua"
+}
