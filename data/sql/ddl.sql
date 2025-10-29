@@ -81,17 +81,22 @@ FROM event_cycle
 GROUP BY bucket, machine_id;
 
 -- Aproximación de duraciones por estado por hora
-CREATE MATERIALIZED VIEW IF NOT EXISTS state_durations_hour
-WITH (timescaledb.continuous) AS
-SELECT machine_id,
-       time_bucket('1 hour', time) AS bucket,
-       SUM(EXTRACT(EPOCH FROM (LEAD(time,1, time_bucket('1 hour', time)+ interval '1 hour')
-              OVER (PARTITION BY machine_id ORDER BY time) - time)))
-         FILTER (WHERE state='RUN') AS run_s,
-       SUM(EXTRACT(EPOCH FROM (LEAD(time,1, time_bucket('1 hour', time)+ interval '1 hour')
-              OVER (PARTITION BY machine_id ORDER BY time) - time)))
-         FILTER (WHERE state IN ('STOP','FAULT')) AS stopfault_s
-FROM event_state
+CREATE VIEW state_spans_v AS
+SELECT
+  machine_id,
+  state,
+  time,
+  LEAD(time) OVER (PARTITION BY machine_id ORDER BY time) AS next_time,
+  EXTRACT(EPOCH FROM (LEAD(time) OVER (PARTITION BY machine_id ORDER BY time) - time)) AS delta_s
+FROM event_state;
+
+CREATE MATERIALIZED VIEW IF NOT EXISTS state_durations_hour AS
+SELECT
+  machine_id,
+  time_bucket('1 hour', time) AS bucket,
+  SUM(delta_s) FILTER (WHERE state = 'RUN') AS run_s,
+  SUM(delta_s) FILTER (WHERE state IN ('STOP','FAULT')) AS stopfault_s
+FROM state_spans_v
 GROUP BY machine_id, bucket;
 
 -- Tiempo planificado por hora (desde calendario)
