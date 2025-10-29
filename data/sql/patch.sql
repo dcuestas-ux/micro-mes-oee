@@ -77,4 +77,3 @@ FROM cycle_agg_hour_v c
 JOIN state_durations_hour_v sd USING (machine_id, bucket)
 JOIN planned_time_hour p USING (machine_id, bucket)
 JOIN machines m USING (machine_id);
-
