@@ -77,3 +77,28 @@ FROM cycle_agg_hour_v c
 JOIN state_durations_hour_v sd USING (machine_id, bucket)
 JOIN planned_time_hour p USING (machine_id, bucket)
 JOIN machines m USING (machine_id);
+
+-- ===== VISTA OEE POR TURNO =====
+CREATE VIEW oee_shift AS
+SELECT
+  date_trunc('day', c.bucket) AS day,
+  s.name AS shift_name,
+  c.machine_id,
+  SUM(c.total_count)::int AS total_count,
+  SUM(c.good_count)::int AS good_count,
+  SUM(c.scrap_count)::int AS scrap_count,
+  SUM(sd.run_s) AS run_s,
+  SUM(p.planned_s) AS planned_s,
+  (SUM(sd.run_s) / NULLIF(SUM(p.planned_s),0))::float AS availability,
+  ((m.ct_ideal_ms/1000.0 * SUM(c.total_count)) / NULLIF(SUM(sd.run_s),0))::float AS performance,
+  (SUM(c.good_count) / NULLIF(SUM(c.total_count),0)::float) AS quality,
+  ((SUM(sd.run_s) / NULLIF(SUM(p.planned_s),0)) *
+   ((m.ct_ideal_ms/1000.0 * SUM(c.total_count)) / NULLIF(SUM(sd.run_s),0)) *
+   (SUM(c.good_count) / NULLIF(SUM(c.total_count),0)::float))::float AS oee
+FROM cycle_agg_hour_v c
+JOIN state_durations_hour_v sd USING (machine_id, bucket)
+JOIN planned_time_hour p USING (machine_id, bucket)
+JOIN machines m USING (machine_id)
+JOIN shift_calendar s ON (EXTRACT(ISODOW FROM (c.bucket at time zone s.timezone)) = ANY(s.dow)
+      AND (c.bucket at time zone s.timezone)::time BETWEEN s.start_local AND (s.start_local + (s.duration_min||' minutes')::interval))
+GROUP BY day, shift_name, c.machine_id, m.ct_ideal_ms;
