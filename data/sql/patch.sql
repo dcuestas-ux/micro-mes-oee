@@ -78,27 +78,3 @@ JOIN state_durations_hour_v sd USING (machine_id, bucket)
 JOIN planned_time_hour p USING (machine_id, bucket)
 JOIN machines m USING (machine_id);
 
--- ===== 5) DATOS DE CONFIGURACIÓN =====
--- Primero: Turnos
-INSERT INTO shift_calendar (name, dow, start_local, duration_min, timezone) VALUES
- ('Turno A', ARRAY[1,2,3,4,5,6], '06:00', 480, 'America/Bogota'),
- ('Turno B', ARRAY[1,2,3,4,5,6], '14:00', 480, 'America/Bogota'),
- ('Turno C', ARRAY[1,2,3,4,5,6], '22:00', 480, 'America/Bogota')
-ON CONFLICT DO NOTHING;
-
--- Segundo: Horas planificadas (depende de shift_calendar)
-WITH hours AS (
-  SELECT generate_series(
-           date_trunc('hour', now() at time zone 'UTC' - interval '3 days'),
-           date_trunc('hour', now() at time zone 'UTC'),
-           interval '1 hour'
-         ) AS bucket
-)
-INSERT INTO planned_time_hour (bucket, machine_id, planned_s)
-SELECT h.bucket, 'cnc01', 3600
-FROM hours h
-JOIN shift_calendar s
-  ON (EXTRACT(ISODOW FROM (h.bucket at time zone s.timezone)) = ANY(s.dow)
-      AND (h.bucket at time zone s.timezone)::time
-          BETWEEN s.start_local AND (s.start_local + (s.duration_min||' minutes')::interval))
-ON CONFLICT (bucket, machine_id) DO NOTHING;
