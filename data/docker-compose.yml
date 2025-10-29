@@ -29,6 +29,16 @@ services:
     volumes:
       - grafana:/var/lib/grafana
 
+  node-red:
+    image: nodered/node-red:latest
+    container_name: node-red
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered:/data
+    environment:
+      - TZ=America/Bogota
+
 volumes:
   dbdata: {}
   nodered: {}

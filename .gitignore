@@ -17,3 +17,8 @@ Thumbs.db
 .env
 # VS Code local history
 .history/
+# Docker volumes (no subir datos)
+data/dbdata/
+data/nodered/
+data/grafana/
+*.log
