@@ -19,13 +19,13 @@ CREATE OR REPLACE VIEW alarms AS
 -- ===== 3) ÍNDICES =====
 CREATE INDEX IF NOT EXISTS ix_event_state_time ON event_state(time);
 CREATE INDEX IF NOT EXISTS ix_event_state_machine_time ON event_state(machine_id, time);
-CREATE UNIQUE INDEX IF NOT EXISTS ux_event_state_seq ON event_state(machine_id, seq);
+CREATE INDEX IF NOT EXISTS ix_event_state_machine_seq ON event_state(machine_id, seq);
 CREATE INDEX IF NOT EXISTS ix_event_cycle_time ON event_cycle(time);
 CREATE INDEX IF NOT EXISTS ix_event_cycle_machine_time ON event_cycle(machine_id, time);
-CREATE UNIQUE INDEX IF NOT EXISTS ux_event_cycle_seq ON event_cycle(machine_id, seq);
+CREATE INDEX IF NOT EXISTS ix_event_cycle_machine_seq ON event_cycle(machine_id, seq);
 CREATE INDEX IF NOT EXISTS ix_event_alarm_time ON event_alarm(time);
 CREATE INDEX IF NOT EXISTS ix_event_alarm_machine_time ON event_alarm(machine_id, time);
-CREATE UNIQUE INDEX IF NOT EXISTS ux_event_alarm_seq ON event_alarm(machine_id, seq);
+CREATE INDEX IF NOT EXISTS ix_event_alarm_machine_seq ON event_alarm(machine_id, seq);
 
 -- ===== 4) VISTAS COMPLEJAS =====
 CREATE VIEW cycle_agg_hour_v AS
